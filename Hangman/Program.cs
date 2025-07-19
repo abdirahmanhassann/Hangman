@@ -5,6 +5,7 @@ using System.Reflection.Metadata.Ecma335;
 using System.Runtime.CompilerServices;
 using System.Runtime.ExceptionServices;
 using System.Net.Http;
+using System.Text.Json;
 class Program
 {
     static async Task Main()
@@ -19,7 +20,8 @@ class Program
             int tries = 6;
             int gamestate = 0; // Game in progress =0, Game won =1, game lost=2
             Console.WriteLine("Welcome to hangman!");
-            string word = await GetWord();
+            string[] word1 = await GetWord();
+            string word = word1[0];
 
             for (int i = 0; i < word.Length; i++)
             {
@@ -116,26 +118,28 @@ class Program
             string playagain = Console.ReadLine();
                  if( !playagain.Equals("1"))
             {
+                Console.WriteLine("Thank you for playing!");
                 game = false;
             }
 
         }
     } 
-    public static async Task<String> GetWord()
+    public static async Task<String[]> GetWord()
     {
         HttpClient client= new HttpClient();
         string uri = "https://random-word-api.herokuapp.com/word";
         try
         {
             HttpResponseMessage response = await client.GetAsync(uri);
+            response.EnsureSuccessStatusCode();
             string res = await response.Content.ReadAsStringAsync();
-           res=res.Substring(2, res.Length - 4);
-            return res;
+            string[] words = JsonSerializer.Deserialize<string[]>(res);
+            return words;
         }
         catch(HttpRequestException e)
         {
             Console.WriteLine(e.Message);
-            return e.Message;
+            return ["Error"];
         }
     }
     }
