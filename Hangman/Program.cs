@@ -45,7 +45,7 @@ class Program
                 else
                 {
 
-                    hashh[guess]--;
+                    hashh[guess]=0;
                     Console.WriteLine("correct Guess");
                     if (!hashh2.ContainsKey(guess))
                     {
